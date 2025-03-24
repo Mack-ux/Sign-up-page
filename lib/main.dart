@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'signupsuccess.dart';
 
 void main() => runApp(const MyApp());
 
@@ -50,7 +51,7 @@ class _SignupFormState extends State<SignupForm> {
   Future<void> _selectDOB(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
-      initialDate: DateTime(2000, 1, 1),
+      initialDate: DateTime.now(),
       firstDate: DateTime(1900),
       lastDate: DateTime.now(),
     );
@@ -66,8 +67,7 @@ class _SignupFormState extends State<SignupForm> {
     if (value == null || value.isEmpty) {
       return 'Please enter an email';
     }
-    String pattern =
-        r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$';
+    String pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$';
     if (!RegExp(pattern).hasMatch(value)) {
       return 'Enter a valid email';
     }
@@ -172,18 +172,31 @@ class _SignupFormState extends State<SignupForm> {
           const SizedBox(height: 32),
 
           // Submit Button
+          // Navigates to success page and displays input
           ElevatedButton(
             onPressed: () {
               if (_formKey.currentState!.validate()) {
                 if (_dob == null) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Please select your date of birth')),
+                    const SnackBar(
+                        content: Text('Please select your date of birth')),
                   );
                   return;
                 }
 
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Signup Successful!')),
+                // Create a user data object
+                final userData = {
+                  'name': _nameController.text,
+                  'email': _emailController.text,
+                  'dob': '${_dob!.day}/${_dob!.month}/${_dob!.year}',
+                  'password': _passwordController.text,
+                };
+
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SignSuccess(userData: userData),
+                  ),
                 );
               }
             },
@@ -194,5 +207,3 @@ class _SignupFormState extends State<SignupForm> {
     );
   }
 }
-
-
